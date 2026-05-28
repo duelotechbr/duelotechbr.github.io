@@ -1334,7 +1334,7 @@
 
     
     <!-- Card 1 -->
-    <div class="comp-card" onclick="location.href='moto-g85-vs-redmi-note-14.html'" style="cursor:pointer;">
+    <div class="comp-card" onclick="location.href='moto-g85-vs-redmi-note-14.html'" style="cursor:pointer;" data-categoria="custo" data-faixa="ate2000 intermediarios" data-marcas="motorola xiaomi">
       <div class="comp-card-top">
         <div class="comp-phones">
           <span>Moto G85</span>
@@ -1367,7 +1367,7 @@
     </div>
 
     <!-- Card 2 -->
-    <div class="comp-card" onclick="location.href='iphone-16-vs-galaxy-s25.html'" style="cursor:pointer;">
+    <div class="comp-card" onclick="location.href='iphone-16-vs-galaxy-s25.html'" style="cursor:pointer;" data-categoria="camera" data-faixa="topo" data-marcas="apple samsung">
       <div class="comp-card-top">
         <div class="comp-phones">
           <span>iPhone 16</span>
@@ -1400,7 +1400,7 @@
     </div>
 
     <!-- Card 3 -->
-    <div class="comp-card" onclick="location.href='redmi-note-14-pro-vs-poco-x7.html'" style="cursor:pointer;">
+    <div class="comp-card" onclick="location.href='redmi-note-14-pro-vs-poco-x7.html'" style="cursor:pointer;" data-categoria="gamer" data-faixa="intermediarios" data-marcas="xiaomi poco">
       <div class="comp-card-top">
         <div class="comp-phones">
           <span>Redmi Note 14 Pro</span>
@@ -1433,7 +1433,7 @@
     </div>
 
     <!-- Card 4 -->
-    <div class="comp-card" onclick="location.href='galaxy-a56-vs-galaxy-a36.html'" style="cursor:pointer;">
+    <div class="comp-card" onclick="location.href='galaxy-a56-vs-galaxy-a36.html'" style="cursor:pointer;" data-categoria="custo" data-faixa="ate2000 intermediarios" data-marcas="samsung">
       <div class="comp-card-top">
         <div class="comp-phones">
           <span>Galaxy A56</span>
@@ -1466,7 +1466,7 @@
     </div>
 
     <!-- Card 5 -->
-    <div class="comp-card" onclick="location.href='comparativo.html'" style="cursor:pointer;">
+    <div class="comp-card" onclick="location.href='comparativo.html'" style="cursor:pointer;" data-categoria="bateria" data-faixa="ate2000 intermediarios" data-marcas="samsung motorola">
       <div class="comp-card-top">
         <div class="comp-phones">
           <span>Galaxy A56</span>
@@ -1499,7 +1499,7 @@
     </div>
 
     <!-- Card 6 -->
-    <div class="comp-card" onclick="location.href='galaxy-a16-vs-moto-g45.html'" style="cursor:pointer;">
+    <div class="comp-card" onclick="location.href='galaxy-a16-vs-moto-g45.html'" style="cursor:pointer;" data-categoria="custo" data-faixa="ate2000" data-marcas="samsung motorola">
       <div class="comp-card-top">
         <div class="comp-phones">
           <span>Galaxy A16</span>
@@ -1754,17 +1754,51 @@
 </footer>
 
 <script>
+let filtroAtivo = 'todos';
+let marcaAtiva = 'todas';
+
 function filtrar(btn) {
   document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+  const texto = btn.textContent.trim().toLowerCase();
+  if (texto === 'todos') filtroAtivo = 'todos';
+  else if (texto === 'até r$ 2.000') filtroAtivo = 'ate2000';
+  else if (texto === 'intermediários') filtroAtivo = 'intermediarios';
+  else if (texto === 'tops de linha') filtroAtivo = 'topo';
+  else if (texto === 'câmera') filtroAtivo = 'camera';
+  else if (texto === 'bateria') filtroAtivo = 'bateria';
+  else if (texto === 'gamer') filtroAtivo = 'gamer';
+  aplicarFiltros();
 }
 
 document.querySelectorAll('.marca-chip').forEach(chip => {
   chip.addEventListener('click', () => {
     document.querySelectorAll('.marca-chip').forEach(c => c.classList.remove('active'));
     chip.classList.add('active');
+    const texto = chip.textContent.trim().toLowerCase().replace('todas as marcas','todas');
+    marcaAtiva = texto;
+    aplicarFiltros();
   });
 });
+
+function aplicarFiltros() {
+  document.querySelectorAll('.comp-card').forEach(card => {
+    const faixa = card.dataset.faixa || '';
+    const categoria = card.dataset.categoria || '';
+    const marcas = card.dataset.marcas || '';
+
+    const passaFiltro = filtroAtivo === 'todos' || faixa.includes(filtroAtivo) || categoria === filtroAtivo;
+    const passaMarca = marcaAtiva === 'todas' || marcas.includes(marcaAtiva);
+
+    if (passaFiltro && passaMarca) {
+      card.style.display = '';
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0)';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
 
 // Animação ao entrar na viewport
 const observer = new IntersectionObserver((entries) => {
