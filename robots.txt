@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://duelotechbr.github.io/sitemap.xml
