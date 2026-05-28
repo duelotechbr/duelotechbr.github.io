@@ -1302,28 +1302,27 @@
 <section>
   <!-- Marcas -->
   <div class="marcas-row">
-    <div class="marca-chip active">
+    <div class="marca-chip active" style="cursor:pointer;" onclick="filtrarMarca(this,'todas')">
       <div class="marca-dot" style="background: var(--accent);"></div>
       Todas as marcas
     </div>
-    <div class="marca-chip">
+    <div class="marca-chip" style="cursor:pointer;" onclick="filtrarMarca(this,'samsung')">
       <div class="marca-dot" style="background: #1428A0;"></div>
       Samsung
     </div>
-    <div class="marca-chip">
+    <div class="marca-chip" style="cursor:pointer;" onclick="filtrarMarca(this,'motorola')">
       <div class="marca-dot" style="background: #E1000F;"></div>
       Motorola
     </div>
-    <div class="marca-chip">
+    <div class="marca-chip" style="cursor:pointer;" onclick="filtrarMarca(this,'xiaomi')">
       <div class="marca-dot" style="background: #FF6900;"></div>
       Xiaomi
     </div>
-    <div class="marca-chip">
+    <div class="marca-chip" style="cursor:pointer;" onclick="filtrarMarca(this,'apple')">
       <div class="marca-dot" style="background: #A2AAAD;"></div>
       Apple
     </div>
-
-    <div class="marca-chip">
+    <div class="marca-chip" style="cursor:pointer;" onclick="filtrarMarca(this,'poco')">
       <div class="marca-dot" style="background: #1DC0FF;"></div>
       POCO
     </div>
@@ -1760,14 +1759,16 @@ let marcaAtiva = 'todas';
 function filtrar(btn) {
   document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  const texto = btn.textContent.trim().toLowerCase();
-  if (texto === 'todos') filtroAtivo = 'todos';
-  else if (texto === 'até r$ 2.000') filtroAtivo = 'ate2000';
-  else if (texto === 'intermediários') filtroAtivo = 'intermediarios';
-  else if (texto === 'tops de linha') filtroAtivo = 'topo';
-  else if (texto === 'câmera') filtroAtivo = 'camera';
-  else if (texto === 'bateria') filtroAtivo = 'bateria';
-  else if (texto === 'gamer') filtroAtivo = 'gamer';
+  const mapa = {
+    'todos': 'todos',
+    'até r$ 2.000': 'ate2000',
+    'intermediários': 'intermediarios',
+    'tops de linha': 'topo',
+    'câmera': 'camera',
+    'bateria': 'bateria',
+    'gamer': 'gamer'
+  };
+  filtroAtivo = mapa[btn.textContent.trim().toLowerCase()] || 'todos';
   aplicarFiltros();
 }
 
@@ -1775,27 +1776,48 @@ document.querySelectorAll('.marca-chip').forEach(chip => {
   chip.addEventListener('click', () => {
     document.querySelectorAll('.marca-chip').forEach(c => c.classList.remove('active'));
     chip.classList.add('active');
-    const texto = chip.textContent.trim().toLowerCase().replace('todas as marcas','todas');
-    marcaAtiva = texto;
+    const txt = chip.querySelector('div') ? chip.textContent.trim().toLowerCase() : chip.textContent.trim().toLowerCase();
+    if (txt.includes('todas')) marcaAtiva = 'todas';
+    else if (txt.includes('samsung')) marcaAtiva = 'samsung';
+    else if (txt.includes('motorola')) marcaAtiva = 'motorola';
+    else if (txt.includes('xiaomi')) marcaAtiva = 'xiaomi';
+    else if (txt.includes('apple')) marcaAtiva = 'apple';
+    else if (txt.includes('poco')) marcaAtiva = 'poco';
+    else marcaAtiva = 'todas';
     aplicarFiltros();
   });
 });
 
-function aplicarFiltros() {
-  document.querySelectorAll('.comp-card').forEach(card => {
-    const faixa = card.dataset.faixa || '';
-    const categoria = card.dataset.categoria || '';
-    const marcas = card.dataset.marcas || '';
+function filtrarMarca(chip, marca) {
+  document.querySelectorAll('.marca-chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  marcaAtiva = marca;
+  aplicarFiltros();
+}
 
-    const passaFiltro = filtroAtivo === 'todos' || faixa.includes(filtroAtivo) || categoria === filtroAtivo;
-    const passaMarca = marcaAtiva === 'todas' || marcas.includes(marcaAtiva);
+function aplicarFiltros() {
+  const grid = document.querySelector('.comparativos-grid');
+  let visiveis = 0;
+  document.querySelectorAll('.comp-card').forEach(card => {
+    const faixa = (card.dataset.faixa || '').toLowerCase();
+    const categoria = (card.dataset.categoria || '').toLowerCase();
+    const marcas = (card.dataset.marcas || '').toLowerCase();
+
+    const passaFiltro = filtroAtivo === 'todos'
+      || faixa.includes(filtroAtivo)
+      || categoria === filtroAtivo;
+
+    const passaMarca = marcaAtiva === 'todas'
+      || marcas.includes(marcaAtiva);
 
     if (passaFiltro && passaMarca) {
       card.style.display = '';
-      card.style.opacity = '1';
-      card.style.transform = 'translateY(0)';
+      setTimeout(() => { card.style.opacity = '1'; card.style.transform = 'translateY(0)'; }, 10);
+      visiveis++;
     } else {
-      card.style.display = 'none';
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(10px)';
+      setTimeout(() => { card.style.display = 'none'; }, 200);
     }
   });
 }
